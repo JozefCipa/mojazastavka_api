@@ -1,0 +1,93 @@
+*
+	margin: 0
+	padding: 0
+	border: 0
+
+.flex-center
+	display: flex
+	justify-content: center
+	align-items: center
+
+$base_color: #f64747
+$header_bg: #f42727
+
+html, body
+	color: white
+	background: $base_color
+	font-family: Arial
+	margin: 0
+	padding: 0
+	height: 100%
+
+#app
+	min-height: 100%
+	@extend .flex-center
+
+	flex-direction: column
+
+	header		
+		@extend .flex-center
+		justify-content: flex-start
+		font-family: "Helvetica"
+		letter-spacing: 1px
+		font-weight: 400
+		padding-left: 50px
+
+		background: -webkit-gradient(linear, left top, left bottom, from($base_color), to($header_bg))
+		background: -moz-linear-gradient(top,  $base_color, $header_bg)
+		filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#{$base_color}', endColorstr='#{$header_bg}')
+		flex: 1
+		width: 100%
+
+	#search
+		@extend .flex-center
+
+		background: $base_color
+		flex: 2
+		width: 100%
+
+	#google-map
+		@extend .flex-center
+		flex: 20
+		width: 100%
+		color: black
+		background: white
+		flex-direction: column
+		position: relative
+
+		#map
+			position: absolute
+			width: 100%
+			height: 100% !important
+
+form 
+	padding: 10px
+	width: 40%
+
+	@media screen and (max-width: 700px)
+		width: 100%
+
+
+.input
+	margin: 5px 0
+
+	input
+		font-size: 18px
+		padding: 10px 5px
+		width: 100%
+		border-radius: 3px
+		box-sizing: border-box
+
+.loader
+	width: 100%
+	height: 100%
+	position: absolute
+	z-index: 100
+	background: rgba(236, 240, 241, .7)
+	@extend .flex-center
+
+	div#img
+		width: 64px
+		height: 64px
+		background-image: url('/assets/loader.gif')	
+
