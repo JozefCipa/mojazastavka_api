@@ -7,10 +7,13 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/script', function () use ($app) {
+
+	//used to parse data to DB from resources
     dispatch(new App\Jobs\CityJob);
 });
 
 $app->get('/find-stops', function (Request $request) use ($app) {
+
 
 	$city_exists = (boolean) app('db')->select('SELECT 1 FROM `cities` WHERE `name` = ?', [$request->get('city')]);
 
@@ -143,41 +146,3 @@ function err($message){
 		'error' => $message
 	]);
 }
-
-
-// RUN SERVER: php -S localhost:8000 -t ./public
-
-/*
-
-APP FUNCTIONALITY
-
- - python script to parse all city stops to DB
-
- -front: react + redux
- -back: lumen, mysql, python scripts
-
-FRONTEND
-- user location
-- destination
-- if geo is enabled: Google maps API call for current location - determine current user location(City, eventually also road or some object)
-- google maps places autocomplete
-
-query: ?city=Presov&user_location[name]=presov&user_location[lat]=0&user_location[lng]=1on&destination[name]=clementisova,presov&destination[lat]=0&destination[lng]=23
-
-enter - send request to API with JSON(POST) or GET array{
-
-	city: 'Presov',
-
-	user_location: {
-		name: 'Presov, Hlavna 15',
-		lat: 0,
-		lng: 0,
-	},
-
-	destination: {
-		name: 'Presov, Clementisova 2',
-		lat: 0,
-		lng: 0,
-	}
-}
-*/

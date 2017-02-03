@@ -28,7 +28,7 @@ class CityJob extends Job
         $urls = [
             'PO' => 'http://www.oma.sk/api?region=-2320257&tabulka=poi&typ=zastavka,stanica&limit=2000',
             'KE' => 'http://www.oma.sk/api?region=-1690324&tabulka=poi&typ=zastavka,zastavka-elektricky,stanica&limit=2000',
-            'BA' => 'http://www.oma.sk/api?region=-1702499&tabulka=poi&typ=zastavka,zastavka-elektricky,stanica&limit=2000'
+            'BA' => 'http://www.oma.sk/api?region=-1702499&tabulka=poi&typ=zastavka,zastavka-elektricky,stanica&limit=2000',
         ];
 
         $vehicles = [
