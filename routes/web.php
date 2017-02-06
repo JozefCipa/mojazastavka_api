@@ -15,11 +15,11 @@ $app->get('/script', function () use ($app) {
 $app->get('/find-stops', function (Request $request) use ($app) {
 
 
-	$city_exists = (boolean) app('db')->select('SELECT 1 FROM `cities` WHERE `name` = ?', [$request->get('city')]);
-
-	//check if city exists in our database
-	if(! $city_exists)
-		return err('Toto mesto žial nie je zatiaľ implementované');
+	// $city_exists = (boolean) app('db')->select('SELECT 1 FROM `cities` WHERE `name` = ?', [$request->get('city')]);
+	
+	// //check if city exists in our database
+	// if(! $city_exists)
+	// 	return err("Mesto {$request->get('city')} zatiaľ nie je implementované");
 
 	if(! $request->get('user_location') || 
 		! $request->get('destination') || 
@@ -30,8 +30,8 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 	//count of stops to return
 	$count = $request->get('count', 3);
 
-	//if request doesn't contains geo coordinates for user_location, send request for them
-	if(! $request->get('user_location')['lat'] || ! $request->get('user_location')['lng']){
+	//if exists user location name, geolocate it, else use geo coordinates
+	if(isset($request->get('user_location')['name'])){
 		
 		try{
 			$user_location_geo = gapi_get_coords($request->get('user_location')['name']);
