@@ -14,24 +14,15 @@ $app->get('/script', function () use ($app) {
 
 $app->get('/find-stops', function (Request $request) use ($app) {
 
-
-	// $city_exists = (boolean) app('db')->select('SELECT 1 FROM `cities` WHERE `name` = ?', [$request->get('city')]);
-	
-	// //check if city exists in our database
-	// if(! $city_exists)
-	// 	return err("Mesto {$request->get('city')} zatiaľ nie je implementované");
-
-	if(! $request->get('user_location') || 
-		! $request->get('destination') || 
-		! $request->get('user_location')['name'] ||
-		! $request->get('destination')['name'])
-			return err('Zlý formát dát');
+	if(! validateRequest($request)){
+		return err('Zlý formát dát');
+	}
 
 	//count of stops to return
 	$count = $request->get('count', 3);
 
 	//if exists user location name, geolocate it, else use geo coordinates
-	if(isset($request->get('user_location')['name'])){
+	if($request->get('user_location')['name']){
 		
 		try{
 			$user_location_geo = gapi_get_coords($request->get('user_location')['name']);
@@ -42,16 +33,16 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 	}
 	else{
 		$user_location_geo = [
-			'lat' => $request->get('user_location')['lat'],
-			'lng' => $request->get('user_location')['lng']
+			'lat' => (float) $request->get('user_location')['lat'],
+			'lng' => (float) $request->get('user_location')['lng']
 		];
 	}
 
 	// find nearest stations in user location
 	$nearest_user_location_stops = find_stops_in_nearby($user_location_geo['lat'], $user_location_geo['lng'], $count);
 
-	//if request doesn't contains geo coordinates for destination, send request for them
-	if(! $request->get('destination')['lat'] || ! $request->get('destination')['lng']){
+	//if exists destination location name, geolocate it, else use geo coordinates
+	if($request->get('destination')['name']){
 
 		try{
 			$destination_geo = gapi_get_coords($request->get('destination')['name']);
@@ -62,8 +53,8 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 	}
 	else{
 		$destination_geo = [
-			'lat' => $request->get('destination')['lat'],
-			'lng' => $request->get('destination')['lng']
+			'lat' => (float) $request->get('destination')['lat'],
+			'lng' => (float) $request->get('destination')['lng']
 		];
 	}
 
@@ -132,7 +123,23 @@ function gapi_get_coords($location){
 
 	$decoded_location = json_decode($res->getBody(), 1)['results'][0]['geometry']['location'];
 
-	return $decoded_location;
+	return [
+		'lat' => (float) $decoded_location['lat'],
+		'lng' => (float) $decoded_location['lng']
+	];
+}
+
+/*
+|-----------------------------------------------
+| Checks if required values are sent in request
+|-----------------------------------------------
+*/
+function validateRequest(Request $request){
+
+	return 	$request->get('user_location') &&
+			$request->get('destination') && 
+			($request->get('user_location')['name'] || ( $request->get('user_location')['lat'] && $request->get('user_location')['lng'] )) &&
+			($request->get('destination')['name'] || ( $request->get('destination')['lat'] && $request->get('destination')['lng']));
 }
 
 /*
