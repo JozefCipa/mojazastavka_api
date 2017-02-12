@@ -15,7 +15,7 @@
 		<h3>Už čoskoro...</h3>
 		<div>
 			Viac informácií na 
-			<a href="mailto://hello@jozefcipa.com?subject=Čo+je+to+MojaZastávka+?">hello@jozefcipa.com</a>
+			<a href="mailto://cipajozef@gmail.com?subject=Čo+je+MojaZastávka+?">cipajozef@gmail.com</a>
 		</div>
 	</main>
 {{-- google analytics --}}
