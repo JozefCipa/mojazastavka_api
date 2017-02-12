@@ -2,11 +2,11 @@
 
 use Illuminate\Http\Request;
 
-$app->get('/', function () use ($app) {
-    return view('app');
+$app->get('/', function (){
+    return view('welcome');
 });
 
-$app->get('/script', function () use ($app) {
+$app->get('/script', function (){
 
 	//used to parse data to DB from resources
     dispatch(new App\Jobs\CityJob);
