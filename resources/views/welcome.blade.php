@@ -18,7 +18,6 @@
 			<a href="mailto://hello@jozefcipa.com?subject=Čo+je+to+MojaZastávka+?">hello@jozefcipa.com</a>
 		</div>
 	</main>
-
 {{-- google analytics --}}
  <script src=""></script>
 </body>
