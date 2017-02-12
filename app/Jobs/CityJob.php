@@ -5,7 +5,7 @@ namespace App\Jobs;
 class CityJob extends Job
 {
 
-    const CURRENT_CITY = 'KE';
+    const CURRENT_CITY = 'ZA';
 
     /**
      * Create a new job instance.
@@ -29,6 +29,13 @@ class CityJob extends Job
             'PO' => 'http://www.oma.sk/api?region=-2320257&tabulka=poi&typ=zastavka,stanica&limit=2000',
             'KE' => 'http://www.oma.sk/api?region=-1690324&tabulka=poi&typ=zastavka,zastavka-elektricky,stanica&limit=2000',
             'BA' => 'http://www.oma.sk/api?region=-1702499&tabulka=poi&typ=zastavka,zastavka-elektricky,stanica&limit=2000',
+            'MI' => 'http://www.oma.sk/api?region=-2386541&tabulka=poi&typ=zastavka,stanica&limit=2000',
+            'TN' => 'http://www.oma.sk/api?region=-1799254&tabulka=poi&typ=zastavka,stanica&limit=2000',
+            'BB' => 'http://www.oma.sk/api?region=-2265296&tabulka=poi&typ=zastavka,stanica&limit=2000',
+            'KO' => 'http://www.oma.sk/api?region=-2218900&tabulka=poi&typ=zastavka,stanica&limit=2000',
+            'LM' => 'http://www.oma.sk/api?region=-2169318&tabulka=poi&typ=zastavka,stanica&limit=2000',
+            'PP' => 'http://www.oma.sk/api?region=-2275137&tabulka=poi&typ=zastavka,stanica&limit=2000',
+            'ZA' => 'http://www.oma.sk/api?region=-1859537&tabulka=poi&typ=zastavka,stanica&limit=2000'
         ];
 
         $vehicles = [
@@ -40,7 +47,14 @@ class CityJob extends Job
         $city_ids = [
             'PO' => 1,
             'KE' => 2,
-            'BA' => 3
+            'BA' => 3,
+            'MI' => 4,
+            'TN' => 5,
+            'BB' => 6,
+            'KO' => 7,
+            'LM' => 8,
+            'PP' => 9,
+            'ZA' => 10
         ];
 
         //load data
