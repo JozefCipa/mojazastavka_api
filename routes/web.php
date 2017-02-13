@@ -33,13 +33,13 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 	}
 	else{
 		$user_location_geo = [
-			'lat' => (float) $request->get('user_location')['lat'],
-			'lng' => (float) $request->get('user_location')['lng']
+			'latitude' => (float) $request->get('user_location')['lat'],
+			'longitude' => (float) $request->get('user_location')['lng']
 		];
 	}
 
 	// find nearest stations in user location
-	$nearest_user_location_stops = find_stops_in_nearby($user_location_geo['lat'], $user_location_geo['lng'], $count);
+	$nearest_user_location_stops = find_stops_in_nearby($user_location_geo['latitude'], $user_location_geo['longitude'], $count);
 
 	//if exists destination location name, geolocate it, else use geo coordinates
 	if($request->get('destination')['name']){
@@ -53,13 +53,13 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 	}
 	else{
 		$destination_geo = [
-			'lat' => (float) $request->get('destination')['lat'],
-			'lng' => (float) $request->get('destination')['lng']
+			'latitude' => (float) $request->get('destination')['lat'],
+			'longitude' => (float) $request->get('destination')['lng']
 		];
 	}
 
 	// find nearest stations in user location
-	$nearest_destination_stops = find_stops_in_nearby($destination_geo['lat'], $destination_geo['lng'], $count);
+	$nearest_destination_stops = find_stops_in_nearby($destination_geo['latitude'], $destination_geo['longitude'], $count);
 
 	return response()->json([
 
@@ -89,7 +89,7 @@ function find_stops_in_nearby($lat, $lng, $count){
 	//Explanation of query: https://developers.google.com/maps/articles/phpsqlsearch_v3
 	$results = app('db')->select('
 
-		SELECT s.name, s.lat, s.lng, s.link_numbers, v.name as type,
+		SELECT s.name, s.lat as latitude, s.lng as longitude, s.link_numbers, v.name as type,
 		( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(?) ) + sin( radians(?) ) * sin( radians( lat ) ) ) ) 
 		AS distance,
 		FORMAT((SELECT distance) * 1000, 0) as distance_in_meters
@@ -124,8 +124,8 @@ function gapi_get_coords($location){
 	$decoded_location = json_decode($res->getBody(), 1)['results'][0]['geometry']['location'];
 
 	return [
-		'lat' => (float) $decoded_location['lat'],
-		'lng' => (float) $decoded_location['lng']
+		'latitude' => (float) $decoded_location['lat'],
+		'longitude' => (float) $decoded_location['lng']
 	];
 }
 
