@@ -52,10 +52,13 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 		}
 	}
 	else{
+
 		$destination_geo = [
 			'latitude' => (float) $request->get('destination')['lat'],
 			'longitude' => (float) $request->get('destination')['lng']
 		];
+
+		$destination_name = get_name_from_geo($destination_geo);
 	}
 
 	// find nearest stations in user location
@@ -66,7 +69,7 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 		'status' => 'OK',
 
 		'current_location_name' => $request->get('user_location')['name'],
-		'destination_name' => $request->get('destination')['name'],
+		'destination_name' => !empty($request->get('destination')['name']) ? $request->get('destination')['name']: $destination_name,
 
 		//searched place
 		'destination' => $destination_geo,
@@ -127,6 +130,26 @@ function gapi_get_coords($location){
 		'latitude' => (float) $decoded_location['lat'],
 		'longitude' => (float) $decoded_location['lng']
 	];
+}
+
+/*
+|------------------------------------------------------------------------------------
+| Sends request to Google maps to obtain location name according to given geo coords
+|-------------------------------------------------------------------------------------
+*/
+function get_name_from_geo($coords){
+	
+	$url = sprintf(env('GOOGLE_MAPS_GEOLOCATE_LAT_LNG'), $coords['latitude'], $coords['longitude'], env('GOOGLE_MAPS_API_KEY'));
+
+    $client = new \GuzzleHttp\Client();
+	$res = $client->request('GET', $url);
+	
+	if($res->getStatusCode() != 200)
+		throw new Exception('Niečo sa pokazilo :/');
+
+	$name = json_decode($res->getBody(), 1)['results'][0]['formatted_address'];
+
+	return $name;
 }
 
 /*
