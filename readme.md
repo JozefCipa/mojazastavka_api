@@ -9,7 +9,7 @@ The answer is **Moja Zastávka**.
 ## Tech stack
  - *iOS app:* React native, Redux, Google maps API
  - *API:* Lumen, Google maps API, MariaDB
- - *3rd party resources: * stops list parsed from [OMA Slovakia](http://www.oma.sk)
+ - *3rd party resources:* stops list parsed from [OMA Slovakia](http://www.oma.sk)
 
 ## Example of stops resource URL
 - KE: http://www.oma.sk/api?region=-1690324&tabulka=poi&typ=zastavka,zastavka-elektricky,stanica&limit=1000
