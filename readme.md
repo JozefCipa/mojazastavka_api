@@ -37,7 +37,7 @@ count - optional, defines count of stops you want to fetch in nearby of the poin
 
 Example of valid URL: 
 
-`http://mojazastavka.jozefcipa.com/find-stops?user_location[name]=&user_location[lat]=48.99123119999999&user_location[lng]=21.2459537&destination[name]=&destination[lat]=48.99866963431629&destination[lng]=21.22763914156817&count=3`
+http://mojazastavka.jozefcipa.com/find-stops?user_location[name]=&user_location[lat]=48.99123119999999&user_location[lng]=21.2459537&destination[name]=&destination[lat]=48.99866963431629&destination[lng]=21.22763914156817&count=3
 
 
 &copy;2016-2017 Jozef Cipa & [OMA Slovakia](http://www.oma.sk)
