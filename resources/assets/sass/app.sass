@@ -3,28 +3,67 @@
 	padding: 0
 	border: 0
 
-.flex-center
+$base_color: #f64747
+
+body
+	font-family: Arial
+	color: #ddd
+	margin: 0
+	padding: 0
+	height: 100vh
+	display: flex
+	flex-direction: column
+
+main
+	background: $base_color
+	flex: 8
 	display: flex
 	justify-content: center
 	align-items: center
 
-$base_color: #f64747
-$header_bg: #f42727
+	section 
+		padding: 20px
+		margin: 20px
 
-body
-	color: white
-	background: $base_color
-	font-family: Arial
-	margin: 0
-	padding: 0
-	height: 100%
-	font-size: 32px
-	text-align: center
-	margin-top: 50px
+	.description
+		background: ping
+		flex: 4
 
-div
-	margin-top: 40px
-	font-size: .7em
+		h1
+			font-size: 3em
+			margin-bottom: 30px
+
+		p
+			font-size: 1.6em
+			line-height: 35px
+
+		.download
+			padding: 40px
+
+	.screen
+		flex: 3
+
+		display: flex
+		justify-content: center
+
+		img
+			height: 600px
+
+
+footer
+	flex: 1
+	background: #222
+	display: flex
+	align-items: center
+	justify-content: flex-end
+
 	a
-		color: white
+		color: $base_color
+		text-decoration: none
 
+		&:hover
+			text-decoration: underline
+
+	p
+		padding: 40px 40px 20px
+	
