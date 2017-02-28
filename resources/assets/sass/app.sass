@@ -28,6 +28,10 @@ main
 		padding: 20px
 		margin: 20px
 
+		@media screen and (max-width: 960px)
+			padding: 10px
+			margin: 10px
+
 	.description
 		background: ping
 		flex: 4
@@ -41,7 +45,19 @@ main
 			line-height: 35px
 
 		.download
-			padding: 40px
+			display: flex
+			align-items: center
+			padding-top: 40px
+
+			@media screen and (max-width: 960px)
+				justify-content: center
+
+			img
+				width: 320px
+
+				@media screen and (max-width: 960px)
+					width: 240px
+
 
 		@media screen and (max-width: 960px)
 			order: 1
@@ -88,4 +104,7 @@ footer
 
 	p
 		padding: 40px 40px 20px
+
+		@media screen and (max-width: 960px)
+			padding: 20px 20px 10px
 	

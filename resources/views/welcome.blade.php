@@ -22,11 +22,13 @@
 				Čo ak je Váš cieľ na druhej strane mesta?<br>
 				Pravdepodobne zvolíte verejnú dopravu, kde však vystúpit?<br>
 				Ktorá zastávka je tá Vaša?<br>
-				S toutu aplikáciou to už viac nie je Váš problém
+				S touto aplikáciou to už viac nie je Váš problém
 			</p>
-			{{-- <div class="download">
-				app store button
-			</div> --}}
+			<div class="download">
+				<a href="https://itunes.apple.com/sk/app/moja-zastávka/id1209063618" target="_blank">
+					<img src="/dist/app_store_badge.svg">
+				</a>
+			</div>
 		</section>
 	</main>
 	<footer>
