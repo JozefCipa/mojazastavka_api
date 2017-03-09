@@ -7,7 +7,7 @@ But the question is: "Which bus/tram is right and where should I get off?"
 The answer is **Moja Zastávka**.
 
 ## Tech stack
- - *iOS app:* React native, Redux, Google maps API
+ - *iOS app:* React Native, Redux, Google maps API
  - *API:* Lumen, Google maps API, MariaDB
  - *3rd party resources:* stops list parsed from [OMA Slovakia](http://www.oma.sk)
 
@@ -18,14 +18,15 @@ In database is currently more than **3500** stops that covers top **10** greates
 
 ## API Endpoint
 `
-/find-stops?[params]
+/find-stops?[params] - finds stops according to given params
+/cities - list of cities in DB
 `
 
 where `params` are: 
 ```
-user_location[name] - optional if lat and lng are provided
-user_location[lat] - optional
-user_location[lng] - optional
+start[name] - optional if lat and lng are provided
+start[lat] - optional
+start[lng] - optional
 
 destination[name] - optional if lat and lng are provided
 destination[lat] - optional
@@ -33,11 +34,9 @@ destination[lng - optional
 count - optional, defines count of stops you want to fetch in nearby of the point
 ```
 
-**NOTE:** In current version of API optional parameters are required(except count) but may remain empty 
+Examples of valid URL: 
 
-Example of valid URL: 
-
-http://mojazastavka.jozefcipa.com/find-stops?user_location[name]=&user_location[lat]=48.99123119999999&user_location[lng]=21.2459537&destination[name]=&destination[lat]=48.99866963431629&destination[lng]=21.22763914156817&count=3
+http://mojazastavka.jozefcipa.com/find-stops?start[lat]=48.99123119999999&start[lng]=21.2459537&destination[lat]=48.99866963431629&destination[lng]=21.22763914156817&count=3
 
 
 &copy;2016-2017 Jozef Cipa & [OMA Slovakia](http://www.oma.sk)

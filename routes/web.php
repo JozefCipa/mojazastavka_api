@@ -6,151 +6,134 @@ $app->get('/', function (){
     return view('welcome');
 });
 
-$app->get('/script', function (){
+// // uncomment, when importing new stops
+// $app->get('/add-city-stops', function (){
 
-	//used to parse data to DB from resources
-    dispatch(new App\Jobs\CityJob);
-});
+// 	//used to parse data to DB from resources
+//     dispatch(new App\Jobs\CityJob);
+// });
 
-$app->get('/find-stops', function (Request $request) use ($app) {
+$app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($app) {
+    
+    $google = new \App\Library\GoogleMapApi([
+    	'GOOGLE_MAPS_GEOCODE_URL' 		=> env('GOOGLE_MAPS_GEOCODE_URL'),
+    	'GOOGLE_MAPS_API_KEY' 			=> env('GOOGLE_MAPS_API_KEY'),
+    	'GOOGLE_MAPS_GEOLOCATE_LAT_LNG' => env('GOOGLE_MAPS_GEOLOCATE_LAT_LNG'),
+    	'GOOGLE_MAPS_DIRECTIONS' 		=> env('GOOGLE_MAPS_DIRECTIONS')
+    ]);
 
-	if(! validateRequest($request)){
-		return err('Zlý formát dát');
-	}
+    $app->get('/cities', function (Request $request) use ($app){
 
-	//count of stops to return
-	$count = $request->get('count', 3);
+    	try{
+    		$cities = app('db')->select('SELECT * FROM `cities`');
 
-	//if exists user location name, geolocate it, else use geo coordinates
-	if($request->get('user_location')['name']){
+			return response()->json([
+				'status' => 'OK',
+				'cities' => $cities
+			]);
+
+    	}catch(Exception $e){
+    		return err($e);
+    	}
+	});
+
+	$app->get('/find-stops', function (Request $request) use ($google) {
+
+		if(! validateRequest($request))
+			return err(new Exception('Zlý formát dát', env('ERR_CODE')));
 		
-		try{
-			$user_location_geo = gapi_get_coords($request->get('user_location')['name']);
+		//count of stops to return
+		$count = $request->get('count', 3);
+
+		//city
+		$city = $request->get('city');
+		if($city){
+			$city = ', ' . $city;
 		}
-		catch(Exception $e){
-			return err($e->getMessage());
+
+		//if exists user location name, geolocate it, else use geo coordinates
+		if(array_key_exists('name', $request->get('start')) && trim($request->get('start')['name'])){
+			try{
+				$startLocationGeo = $google->geolocateAddress($request->get('start')['name'] . $city);
+			}
+			catch(Exception $e){
+				return err($e);
+			}
 		}
-	}
-	else{
-		$user_location_geo = [
-			'latitude' => (float) $request->get('user_location')['lat'],
-			'longitude' => (float) $request->get('user_location')['lng']
-		];
-	}
-
-	// find nearest stations in user location
-	$nearest_user_location_stops = find_stops_in_nearby($user_location_geo['latitude'], $user_location_geo['longitude'], $count);
-
-	//if exists destination location name, geolocate it, else use geo coordinates
-	if($request->get('destination')['name']){
-
-		try{
-			$destination_geo = gapi_get_coords($request->get('destination')['name']);
+		else{
+			$startLocationGeo = [
+				'latitude' => (float) $request->get('start')['lat'],
+				'longitude' => (float) $request->get('start')['lng']
+			];
 		}
-		catch(Exception $e){
-			return err($e->getMessage());
+
+		// find nearest stations in user location
+		$nearbyStops = $google->findStopsInNearby($startLocationGeo['latitude'], $startLocationGeo['longitude'], $count);
+
+		//if exists destination location name, geolocate it, else use geo coordinates
+		if(array_key_exists('name', $request->get('destination')) && trim($request->get('destination')['name'])){
+
+			try{
+				$destinationLocationGeo = $google->geolocateAddress($request->get('destination')['name'] . $city);
+			}
+			catch(Exception $e){
+				return err($e);
+			}
 		}
-	}
-	else{
+		else{
 
-		$destination_geo = [
-			'latitude' => (float) $request->get('destination')['lat'],
-			'longitude' => (float) $request->get('destination')['lng']
-		];
+			$destinationLocationGeo = [
+				'latitude' => (float) $request->get('destination')['lat'],
+				'longitude' => (float) $request->get('destination')['lng']
+			];
 
-		$destination_name = get_name_from_geo($destination_geo);
-	}
+			try{
+				$destinationName = $google->geolocateLatLng($destinationLocationGeo);
+			}
+			catch(Exception $e){
+				return err($e);
+			}
+		}
 
-	// find nearest stations in user location
-	$nearest_destination_stops = find_stops_in_nearby($destination_geo['latitude'], $destination_geo['longitude'], $count);
+		// find nearest stations in user location
+		$destinationStops = $google->findStopsInNearby($destinationLocationGeo['latitude'], $destinationLocationGeo['longitude'], $count);
 
-	return response()->json([
 
-		'status' => 'OK',
+		if($request->get('directions') !== 'false'){
+			//find directions for every stop
+			foreach ($nearbyStops as $stop) {
+				$stop->directions = $google->findDirections((array) $stop, $startLocationGeo);
+			}
 
-		'current_location_name' => $request->get('user_location')['name'],
-		'destination_name' => !empty($request->get('destination')['name']) ? $request->get('destination')['name']: $destination_name,
+			foreach ($destinationStops as $stop) {
+				$stop->directions = $google->findDirections((array) $stop, $destinationLocationGeo);
+			}
+		}
 
-		//searched place
-		'destination' => $destination_geo,
+		return response()->json([
 
-		//stops near searched place
-		'destination_stops' => $nearest_destination_stops,
+			//response info
+			'status' => 'OK',
 
-	 	//stops near user current location
-		'nearby_stops' => $nearest_user_location_stops
-	]);
-});
+			//base data
+			'city' => $city,
+			'startName' => array_key_exists('name', $request->get('start')) ? $request->get('start')['name'] : '',
+			'destinationName' => array_key_exists('name', $request->get('destination')) && !empty($request->get('destination')['name']) ? $request->get('destination')['name']: $destinationName,
 
-/*
-|---------------------------------------------------------------------------
-| Find nearest stops stored in DB according to given latitude and longitude
-|---------------------------------------------------------------------------
-*/
-function find_stops_in_nearby($lat, $lng, $count){
+			//searched place geo
+			'destinationGeo' => $destinationLocationGeo,
 
-	//Explanation of query: https://developers.google.com/maps/articles/phpsqlsearch_v3
-	$results = app('db')->select('
+			//starting location geo
+			'startGeo' => $startLocationGeo,
 
-		SELECT s.name, s.lat as latitude, s.lng as longitude, s.link_numbers, v.name as type,
-		( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(?) ) + sin( radians(?) ) * sin( radians( lat ) ) ) ) 
-		AS distance,
-		FORMAT((SELECT distance) * 1000, 0) as distance_in_meters
-		FROM stops s
-		JOIN vehicle_types v ON v.id = s.vehicle_type_id
-		HAVING distance < 5 ORDER BY distance LIMIT 0, ?',
-		[ 
-			(float) $lat, 
-			(float) $lng,
-			(float) $lat,
-			$count
+			//stops near searched place
+			'destinationStops' => $destinationStops,
+
+		 	//stops near user current location
+			'nearbyStops' => $nearbyStops
 		]);
-
-	return $results;
-}
-
-/*
-|-----------------------------------------------------------------
-| Sends request to Google maps to obtain geocde for given location
-|-----------------------------------------------------------------
-*/
-function gapi_get_coords($location){
-
-	$url = sprintf(env('GOOGLE_MAPS_GEOCODE_URL'), $location, env('GOOGLE_MAPS_API_KEY'));
-
-    $client = new \GuzzleHttp\Client();
-	$res = $client->request('GET', $url);
-	
-	if($res->getStatusCode() != 200)
-		throw new Exception('Niečo sa pokazilo :/');
-
-	$decoded_location = json_decode($res->getBody(), 1)['results'][0]['geometry']['location'];
-
-	return [
-		'latitude' => (float) $decoded_location['lat'],
-		'longitude' => (float) $decoded_location['lng']
-	];
-}
-
-/*
-|------------------------------------------------------------------------------------
-| Sends request to Google maps to obtain location name according to given geo coords
-|-------------------------------------------------------------------------------------
-*/
-function get_name_from_geo($coords){
-	
-	$url = sprintf(env('GOOGLE_MAPS_GEOLOCATE_LAT_LNG'), $coords['latitude'], $coords['longitude'], env('GOOGLE_MAPS_API_KEY'));
-
-    $client = new \GuzzleHttp\Client();
-	$res = $client->request('GET', $url);
-	
-	if($res->getStatusCode() != 200)
-		throw new Exception('Niečo sa pokazilo :/');
-
-	$name = json_decode($res->getBody(), 1)['results'][0]['formatted_address'];
-
-	return $name;
-}
+	});
+});
 
 /*
 |-----------------------------------------------
@@ -159,10 +142,22 @@ function get_name_from_geo($coords){
 */
 function validateRequest(Request $request){
 
-	return 	$request->get('user_location') &&
-			$request->get('destination') && 
-			($request->get('user_location')['name'] || ( $request->get('user_location')['lat'] && $request->get('user_location')['lng'] )) &&
-			($request->get('destination')['name'] || ( $request->get('destination')['lat'] && $request->get('destination')['lng']));
+	try{
+		$requiredArrays = $request->get('start') && $request->get('destination');
+
+		//if exists either name or lat and lng params
+		$userLocationArray = array_key_exists('name', $request->get('start')) || 
+			( array_key_exists('lat', $request->get('start')) && array_key_exists('lng', $request->get('start') )
+		);
+
+		$destinationLocationArray = array_key_exists('name', $request->get('destination')) || 
+			( array_key_exists('lat', $request->get('destination')) && array_key_exists('lng', $request->get('destination') )
+		);
+
+		return $requiredArrays && $userLocationArray && $destinationLocationArray;
+	}catch(Exception $e){
+		return false;
+	}
 }
 
 /*
@@ -170,7 +165,16 @@ function validateRequest(Request $request){
 | Returns JSON error response
 |-------------------------------
 */
-function err($message){
+function err(Exception $e){
+
+	// check if error message from exception can be showed to user
+	// if exception is catched in constructor is ERR_CODE
+	// or code just crashed
+	if($e->getCode() == env('ERR_CODE'))
+		$message = $e->getMessage();
+	else
+		$message = 'Nastala chyba v aplikácii.';
+
 	return response()->json([
 		'status' => 'ERROR',
 		'error' => $message

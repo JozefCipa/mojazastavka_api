@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>MojaZastávka - nájdite zastávku do Vášho cieľa</title>
+	<title>Moja Zastávka - nájdite zastávku do Vášho cieľa</title>
 	<meta name="author" content="Jozef Cipa">
 	<meta name="keywords" content="mojazastavka, mhd, slovensko, autobusy, elektricky">
 	<meta name="description" content="">
@@ -26,7 +26,7 @@
 			</p>
 			<div class="download">
 				<a href="https://itunes.apple.com/sk/app/moja-zastávka/id1209063618" target="_blank">
-					<img src="/dist/app_store_badge.svg">
+					<img src="/dist/app_store_badge.svg" alt="">
 				</a>
 			</div>
 		</section>
@@ -44,7 +44,6 @@
 
 	  ga('create', 'UA-92532943-1', 'auto');
 	  ga('send', 'pageview');
-
 	</script>
 </body>
 </html>

@@ -35,7 +35,7 @@ class CityJob extends Job
             'KO' => 'http://www.oma.sk/api?region=-2218900&tabulka=poi&typ=zastavka,stanica&limit=2000',
             'LM' => 'http://www.oma.sk/api?region=-2169318&tabulka=poi&typ=zastavka,stanica&limit=2000',
             'PP' => 'http://www.oma.sk/api?region=-2275137&tabulka=poi&typ=zastavka,stanica&limit=2000',
-            'ZA' => 'http://www.oma.sk/api?region=-1859537&tabulka=poi&typ=zastavka,stanica&limit=2000'
+            'ZA' => 'http://www.oma.sk/api?region=-1859537&tabulka=poi&typ=zastavka,stanica&limit=2000',
         ];
 
         $vehicles = [
@@ -54,7 +54,7 @@ class CityJob extends Job
             'KO' => 7,
             'LM' => 8,
             'PP' => 9,
-            'ZA' => 10
+            'ZA' => 10,
         ];
 
         //load data
