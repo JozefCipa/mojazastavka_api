@@ -17,6 +17,8 @@ The answer is **Moja Zastávka**.
 In database is currently more than **3500** stops that covers top **10** greatest Slovak cities
 
 ## API Endpoint
+
+Current version prefix is `/api/v2`
 ```
 /find-stops?[params] - finds stops according to given params
 /cities - list of cities in DB
@@ -39,13 +41,11 @@ directions - optional, default true, enables loading directions for every stop t
 
 Examples of valid URL: 
 
-http://mojazastavka.jozefcipa.com/find-stops?start[lat]=48.99123119&start[lng]=21.2459537&destination[lat]=48.998669&destination[lng]=21.22763914&count=3
+http://mojazastavka.jozefcipa.com/api/v2/find-stops?start[lat]=48.99123119&start[lng]=21.2459537&destination[lat]=48.998669&destination[lng]=21.22763914&count=3
 
 or 
 
-http://mojazastavka.jozefcipa.com/find-stops?city=Prešov&start[name]=SPŠE&destination[name]=Na%20Hlavnej&directions=false
-
-
+http://mojazastavka.jozefcipa.com/api/v2/find-stops?city=Prešov&start[name]=SPŠE&destination[name]=Na%20Hlavnej&directions=false
 
 &copy;2016-2017 Jozef Cipa & [OMA Slovakia](http://www.oma.sk)
 
