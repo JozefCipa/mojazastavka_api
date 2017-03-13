@@ -20,7 +20,8 @@ In database is currently more than **3500** stops that covers top **10** greates
 
 Current version prefix is `/api/v2`
 ```
-/find-stops?[params] - finds stops according to given params
+/find/stops?[stops_params] - finds stops according to given params
+/find/departures?[departures_params] - finds 3 nearest departures for given stop
 /cities - list of cities in DB
 ```
 
@@ -37,6 +38,14 @@ destination[lng - optional
 city - optioal, defines city, when city is filled in, start and destination address may be without this city
 count - optional, default 3, defines count of stops you want to fetch in nearby of the point
 directions - optional, default true, enables loading directions for every stop to show polyline in map
+```
+
+`departures params`:
+```
+start - name of start stop
+destination - name of destination stop
+city - city name
+time - optional, in format *HH:MM d.m*
 ```
 
 Examples of valid URL: 
