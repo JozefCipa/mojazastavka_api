@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Library\GoogleMapApi;
+use App\Library\CP\CpSK;
+use App\Library\CP\CpException;
 
 $app->get('/', function (){
     return view('welcome');
@@ -15,13 +18,18 @@ $app->get('/', function (){
 
 $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($app) {
     
-    $google = new \App\Library\GoogleMapApi([
+    //create GoogleMapApi instance for sending map requests
+    $google = new GoogleMapApi([
     	'GOOGLE_MAPS_GEOCODE_URL' 		=> env('GOOGLE_MAPS_GEOCODE_URL'),
     	'GOOGLE_MAPS_API_KEY' 			=> env('GOOGLE_MAPS_API_KEY'),
     	'GOOGLE_MAPS_GEOLOCATE_LAT_LNG' => env('GOOGLE_MAPS_GEOLOCATE_LAT_LNG'),
     	'GOOGLE_MAPS_DIRECTIONS' 		=> env('GOOGLE_MAPS_DIRECTIONS')
     ]);
 
+    //initialize cp.sk api
+    $cpsk = new CpSK;
+
+    //all cities for whose are stops available in DB
     $app->get('/cities', function (Request $request) use ($app){
 
     	try{
@@ -37,9 +45,35 @@ $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($a
     	}
 	});
 
-	$app->get('/find-stops', function (Request $request) use ($google) {
+    //find nearest departures from given stop
+    $app->get('/find/departures', function(Request $request) use ($cpsk){
+    	
+    	if(! validateDeparturesRequest($request))
+			return err(new Exception('Zlý formát dát', env('ERR_CODE')));
+    	
+    	try{
+    		$departures = $cpsk->from($request->get('start'))
+	    		->to($request->get('destination'))
+	    		->useVehicles(CpSK::MHD)
+	    		->inCity($request->get('city'))
+	    		->at($request->get('time'))
+	    		->find();
 
-		if(! validateRequest($request))
+	    	return response()->json([
+	    		'status' => 'OK',
+	    		'departuresParams' => $request->all(),
+	    		'departures' => $departures
+	    	]);
+	    }
+	    catch(Exception $e){
+	    	return err($e);
+	    }
+    });
+
+    //main API endpoint, finds stops
+	$app->get('/find/stops', function (Request $request) use ($google) {
+
+		if(! validateStopsRequest($request))
 			return err(new Exception('Zlý formát dát', env('ERR_CODE')));
 		
 		//count of stops to return
@@ -98,9 +132,8 @@ $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($a
 		// find nearest stations in user location
 		$destinationStops = $google->findStopsInNearby($destinationLocationGeo['latitude'], $destinationLocationGeo['longitude'], $count);
 
-
-		if($request->get('directions') !== 'false'){
-			//find directions for every stop
+		//find directions for every stop
+		if($request->get('directions') !== 'false' /* && false */){
 			foreach ($nearbyStops as $stop) {
 				$stop->directions = $google->findDirections((array) $stop, $startLocationGeo);
 			}
@@ -140,7 +173,7 @@ $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($a
 | Checks if required values are sent in request
 |-----------------------------------------------
 */
-function validateRequest(Request $request){
+function validateStopsRequest(Request $request){
 
 	try{
 		$requiredArrays = $request->get('start') && $request->get('destination');
@@ -160,6 +193,26 @@ function validateRequest(Request $request){
 	}
 }
 
+function validateDeparturesRequest(Request $request){
+
+	try{
+
+		// start stop, destination, city, 
+
+		if(trim($request->get('start')) == '' ||
+			trim($request->get('destination')) == '' ||
+			trim($request->get('city')) == ''){
+			return false;
+		}
+
+		return true;
+
+	}catch(Exception $e){
+		return false;
+	}
+
+}
+
 /*
 |-------------------------------
 | Returns JSON error response
@@ -170,10 +223,13 @@ function err(Exception $e){
 	// check if error message from exception can be showed to user
 	// if exception is catched in constructor is ERR_CODE
 	// or code just crashed
-	if($e->getCode() == env('ERR_CODE'))
+	if($e->getCode() == env('ERR_CODE') || $e instanceof CpException)
 		$message = $e->getMessage();
-	else
-		$message = 'Nastala chyba v aplikácii.';
+	else{
+		$message = 'Nastala chyba.\nNa jej odstránení sa pracuje.';
+
+		//TODO: send me an email
+	}
 
 	return response()->json([
 		'status' => 'ERROR',

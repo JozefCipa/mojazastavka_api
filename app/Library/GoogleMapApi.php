@@ -140,6 +140,14 @@ class GoogleMapApi{
             $points[] = $number * 1 / pow(10, 5); // 5 is precision
         }
 
-        return array_chunk($points, 2);
+        $latLngPoints = [];
+        foreach(array_chunk($points, 2) as $pair){
+        	$latLngPoints[] = [
+        		'latitude' => $pair[0],
+        		'longitude' => $pair[1]
+        	];
+        }
+
+        return $latLngPoints;
 	}
 }
