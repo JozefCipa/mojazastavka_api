@@ -50,11 +50,11 @@ time - optional, in format *HH:MM d.m*
 
 Examples of valid URL: 
 
-http://mojazastavka.jozefcipa.com/api/v2/find-stops?start[lat]=48.99123119&start[lng]=21.2459537&destination[lat]=48.998669&destination[lng]=21.22763914&count=3
+http://mojazastavka.jozefcipa.com/api/v2/find/stops?start[lat]=48.99123119&start[lng]=21.2459537&destination[lat]=48.998669&destination[lng]=21.22763914&count=3
 
 or 
 
-http://mojazastavka.jozefcipa.com/api/v2/find-stops?city=Prešov&start[name]=SPŠE&destination[name]=Na%20Hlavnej&directions=false
+http://mojazastavka.jozefcipa.com/api/v2/find/stops?city=Prešov&start[name]=SPŠE&destination[name]=Na%20Hlavnej&directions=false
 
 &copy;2016-2017 Jozef Cipa & [OMA Slovakia](http://www.oma.sk)
 
