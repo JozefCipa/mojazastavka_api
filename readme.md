@@ -25,7 +25,7 @@ Current version prefix is `/api/v2`
 /cities - list of cities in DB
 ```
 
-where `params` are: 
+where `stops_params` are: 
 ```
 start[name] - optional if lat and lng are provided
 start[lat] - optional
@@ -40,7 +40,7 @@ count - optional, default 3, defines count of stops you want to fetch in nearby 
 directions - optional, default true, enables loading directions for every stop to show polyline in map
 ```
 
-`departures params`:
+`departures_params`:
 ```
 start - name of start stop
 destination - name of destination stop
