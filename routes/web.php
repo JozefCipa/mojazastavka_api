@@ -4,16 +4,21 @@ use Illuminate\Http\Request;
 use App\Library\GoogleMapApi;
 use App\Library\CP\CpSK;
 use App\Library\CP\CpException;
+use Illuminate\Support\Facades\Mail;
 
 $app->get('/', function (){
     return view('welcome');
 });
 
 // // uncomment, when importing new stops
-// $app->get('/add-city-stops', function (){
-
+// $app->get('/add-city-stops/{citySPZ}', function ($citySPZ){
 // 	//used to parse data to DB from resources
-//     dispatch(new App\Jobs\CityJob);
+//     dispatch(new App\Jobs\CityJob($citySPZ));
+// });
+
+// uncomment, when importing link numbers
+// $app->get('/parse-link-numbers/{city}/{cpsk_idoskey}', function($city, $cpsk_idoskey){
+// 	dispatch(new App\Jobs\LinkNumbersJob($city, $cpsk_idoskey));
 // });
 
 $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($app) {
@@ -168,6 +173,85 @@ $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($a
 	});
 });
 
+
+// API v1.0 - support for not updated apps
+$app->get('/find-stops', function (Request $request) use ($app) {
+
+	if(! validateRequest($request)){
+		return err('Zlý formát dát');
+	}
+
+	$google = new GoogleMapApi([
+    	'GOOGLE_MAPS_GEOCODE_URL' 		=> env('GOOGLE_MAPS_GEOCODE_URL'),
+    	'GOOGLE_MAPS_API_KEY' 			=> env('GOOGLE_MAPS_API_KEY'),
+    	'GOOGLE_MAPS_GEOLOCATE_LAT_LNG' => env('GOOGLE_MAPS_GEOLOCATE_LAT_LNG'),
+    	'GOOGLE_MAPS_DIRECTIONS' 		=> env('GOOGLE_MAPS_DIRECTIONS')
+    ]);
+
+	//count of stops to return
+	$count = $request->get('count', 3);
+
+	//if exists user location name, geolocate it, else use geo coordinates
+	if($request->get('user_location')['name']){
+		
+		try{
+			$user_location_geo = $google->geolocateAddress($request->get('user_location')['name']);
+		}
+		catch(Exception $e){
+			return err($e->getMessage());
+		}
+	}
+	else{
+		$user_location_geo = [
+			'latitude' => (float) $request->get('user_location')['lat'],
+			'longitude' => (float) $request->get('user_location')['lng']
+		];
+	}
+
+	// find nearest stations in user location
+	$nearest_user_location_stops = $google->findStopsInNearby($user_location_geo['latitude'], $user_location_geo['longitude'], $count);
+
+	//if exists destination location name, geolocate it, else use geo coordinates
+	if($request->get('destination')['name']){
+
+		try{
+			$destination_geo = $google->geolocateAddress($request->get('destination')['name']);
+		}
+		catch(Exception $e){
+			return err($e->getMessage());
+		}
+	}
+	else{
+
+		$destination_geo = [
+			'latitude' => (float) $request->get('destination')['lat'],
+			'longitude' => (float) $request->get('destination')['lng']
+		];
+
+		$destination_name = $google->geolocateLatLng($destination_geo);
+	}
+
+	// find nearest stations in user location
+	$nearest_destination_stops = $google->findStopsInNearby($destination_geo['latitude'], $destination_geo['longitude'], $count);
+
+	return response()->json([
+
+		'status' => 'OK',
+
+		'current_location_name' => $request->get('user_location')['name'],
+		'destination_name' => !empty($request->get('destination')['name']) ? $request->get('destination')['name']: $destination_name,
+
+		//searched place
+		'destination' => $destination_geo,
+
+		//stops near searched place
+		'destination_stops' => $nearest_destination_stops,
+
+	 	//stops near user current location
+		'nearby_stops' => $nearest_user_location_stops
+	]);
+});
+
 /*
 |-----------------------------------------------
 | Checks if required values are sent in request
@@ -198,7 +282,6 @@ function validateDeparturesRequest(Request $request){
 	try{
 
 		// start stop, destination, city, 
-
 		if(trim($request->get('start')) == '' ||
 			trim($request->get('destination')) == '' ||
 			trim($request->get('city')) == ''){
@@ -228,7 +311,11 @@ function err(Exception $e){
 	else{
 		$message = 'Nastala chyba.\nNa jej odstránení sa pracuje.';
 
-		//TODO: send me an email
+		// Notify me about every system exception
+		Mail::raw($e->getMessage(), function ($m) {
+	        $m->to(env('ADMIN_EMAIL'), 'Moja Zastávka - Administrator')
+	       	  ->subject('Moja Zastávka - Exception occurred');
+	    });	
 	}
 
 	return response()->json([

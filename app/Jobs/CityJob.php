@@ -5,16 +5,14 @@ namespace App\Jobs;
 class CityJob extends Job
 {
 
-    const CURRENT_CITY = 'ZA';
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($citySPZ)
     {
-         
+         $this->city = $citySPZ;
     }
 
     /**
@@ -58,7 +56,7 @@ class CityJob extends Job
         ];
 
         //load data
-        $res = (new \GuzzleHttp\Client())->request('GET', $urls[self::CURRENT_CITY]);
+        $res = (new \GuzzleHttp\Client())->request('GET', $urls[$this->city]);
         if($res->getStatusCode() != 200)
             throw new Exception('Niečo sa pokazilo :/');
         $responseBody = $res->getBody();
@@ -77,7 +75,7 @@ class CityJob extends Job
                 $vehicleTypeId = 1;
             elseif(in_array('zastavka', $stop->properties->typy))
                 $vehicleTypeId = 1;
-            elseif(in_array('something else', $stop->properties->typy))
+            elseif(in_array('[TROLLEYBUS - NOT IMPLEMENTED]', $stop->properties->typy))
                 $vehicleTypeId = 2;
             elseif((in_array('zastavka-elektricky', $stop->properties->typy)))
                 $vehicleTypeId = 3;
@@ -86,7 +84,7 @@ class CityJob extends Job
                 $stop->properties->name,
                 (float) $stop->geometry->coordinates[1],
                 (float) $stop->geometry->coordinates[0],
-                $city_ids[self::CURRENT_CITY],
+                $city_ids[$this->city],
                 $vehicleTypeId
             ]);
         }

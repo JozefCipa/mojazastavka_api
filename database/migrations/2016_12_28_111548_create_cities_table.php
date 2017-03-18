@@ -17,6 +17,7 @@ class CreateCitiesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('name_escaped');
+            $table->string('cpsk_selectedTT'); // City ID used by cp.sk
         });
     }
 

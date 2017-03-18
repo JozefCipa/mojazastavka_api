@@ -81,7 +81,7 @@ class CpSK{
 			$this->timeDate = $time;
 		}
 		else{
-			throw new CpException('Wrong date format. Time should be in "HH:MM d.m" format.', CpException::TIME_FORMAT);
+			throw new CpException('Wrong date format. Time should be in "HH:MM d.m.Y" format.', CpException::TIME_FORMAT);
 		}
 
 		return $this;
