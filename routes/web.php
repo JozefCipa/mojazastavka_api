@@ -178,7 +178,7 @@ $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($a
 $app->get('/find-stops', function (Request $request) use ($app) {
 
 	if(! validateRequest($request)){
-		return err('Zlý formát dát');
+		return err(new Exception('Zlý formát dát', env('ERR_CODE')));
 	}
 
 	$google = new GoogleMapApi([
@@ -198,7 +198,7 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 			$user_location_geo = $google->geolocateAddress($request->get('user_location')['name']);
 		}
 		catch(Exception $e){
-			return err($e->getMessage());
+			return err($e);
 		}
 	}
 	else{
@@ -218,7 +218,7 @@ $app->get('/find-stops', function (Request $request) use ($app) {
 			$destination_geo = $google->geolocateAddress($request->get('destination')['name']);
 		}
 		catch(Exception $e){
-			return err($e->getMessage());
+			return err($e);
 		}
 	}
 	else{
@@ -265,6 +265,26 @@ function validateStopsRequest(Request $request){
 		//if exists either name or lat and lng params
 		$userLocationArray = array_key_exists('name', $request->get('start')) || 
 			( array_key_exists('lat', $request->get('start')) && array_key_exists('lng', $request->get('start') )
+		);
+
+		$destinationLocationArray = array_key_exists('name', $request->get('destination')) || 
+			( array_key_exists('lat', $request->get('destination')) && array_key_exists('lng', $request->get('destination') )
+		);
+
+		return $requiredArrays && $userLocationArray && $destinationLocationArray;
+	}catch(Exception $e){
+		return false;
+	}
+}
+
+//fallback for old app version
+function validateRequest(Request $request){
+	try{
+		$requiredArrays = $request->get('user_location') && $request->get('destination');
+
+		//if exists either name or lat and lng params
+		$userLocationArray = array_key_exists('name', $request->get('user_location')) || 
+			( array_key_exists('lat', $request->get('user_location')) && array_key_exists('lng', $request->get('user_location') )
 		);
 
 		$destinationLocationArray = array_key_exists('name', $request->get('destination')) || 

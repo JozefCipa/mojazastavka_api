@@ -33,7 +33,7 @@
 	</main>
 	<footer>
 		<p>
-			&copy;&nbsp;2017 <a href="https://jozefcipa.com">Jozef Cipa</a> &amp; <a href="http://bart.sk">bart.sk</a>
+			&copy;&nbsp;2017 <a href="https://jozefcipa.com">Jozef Cipa</a> &amp; <a href="https://bart.sk">bart.sk</a>
 		</p>
 	</footer>
 	<script>

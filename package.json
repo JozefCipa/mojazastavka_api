@@ -11,29 +11,27 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JozefCipa/mojazastavka.sk.git"
+    "url": "git+https://github.com/JozefCipa/mojazastavka_ios.git"
   },
   "keywords": [
     "bus",
+    "tram",
     "stop",
     "maps",
-    "city"
+    "city",
+    "zastavka",
+    "autobus",
+    "elektricky",
+    "mesto"
   ],
   "author": "Jozef Cipa",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/JozefCipa/mojazastavka.sk/issues"
+    "url": "https://github.com/JozefCipa/mojazastavka_ios/issues"
   },
-  "homepage": "https://github.com/JozefCipa/mojazastavka.sk#readme",
-  "dependencies": {
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0",
-    "react": "^15.4.1",
-    "react-dom": "^15.4.1"
-  },
+  "homepage": "https://github.com/JozefCipa/mojazastavka_ios#readme",
+  "dependencies": {},
   "devDependencies": {
-    "babelify": "^7.3.0",
-    "browserify": "^13.1.1",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.3.2",
     "gulp-livereload": "^3.8.1",
