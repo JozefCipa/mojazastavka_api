@@ -11,6 +11,7 @@ return [
     |
     */
     'default' => env('DB_CONNECTION', 'mysql'),
+    'fetch' => PDO::FETCH_OBJ,
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -39,7 +40,7 @@ return [
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'strict' => false,
-            'engine' => null,
+            'engine' => null
         ]
     ],
     /*

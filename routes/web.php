@@ -24,17 +24,17 @@ $app->get('/', function (){
 // 	dispatch(new App\Jobs\LinkNumbersJob($city, $cpsk_idoskey));
 // });
 
-$app->get('/redis-test', function(){
-	Cache::put('cache:test', 'test data from laravel', 10);
-	dd(Cache::get('testing'));
-});
+// $app->get('/redis-test', function(){
+// 	Cache::put('cache:test', 'test data from laravel', 10);
+// 	dd(Cache::get('cache:test'));
+// });
 
-$app->get('/email-test', function(){
-	Mail::raw('Testing emails', function ($m) {
-        $m->to(env('ADMIN_EMAIL'), 'Moja Zastávka - Administrator')
-       	  ->subject('Moja Zastávka - Testing');
-    });	
-});
+// $app->get('/email-test', function(){
+// 	Mail::raw('Testing emails', function ($m) {
+//         $m->to(env('ADMIN_EMAIL'), 'Moja Zastávka - Administrator')
+//        	  ->subject('Moja Zastávka - Testing');
+//     });	
+// });
 
 $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($app) {
     
@@ -156,26 +156,25 @@ $app->group(['middleware' => 'time', 'prefix' => '/api/v2'], function () use ($a
 		if($request->get('directions') !== 'false' /* && false */){
 			foreach ($nearbyStops as $stop) {
 
-				// dd($stop);
-				$key = $stop['id'] . '-' . $stop['name'];
+				$key = $stop->id . '-' . $stop->name;
 
 				if(Cache::has($key)){
-					$stop['directions'] = Cache::get($key);
+					$stop->directions = Cache::get($key);
 				}else{
-					$stop['directions'] = $google->findDirections((array) $stop, $startLocationGeo);
-					Cache::add($key, $stop['directions'], Carbon::now(env('APP_TIMEZONE'))->addWeeks(1));
+					$stop->directions = $google->findDirections((array) $stop, $startLocationGeo);
+					Cache::add($key, $stop->directions, Carbon::now(env('APP_TIMEZONE'))->addWeeks(1));
 				}
 			}
 
 			foreach ($destinationStops as $stop) {
 
-				$key = $stop['id'] . '-' . $stop['name'];
+				$key = $stop->id . '-' . $stop->name;
 
 				if(Cache::has($key)){
-					$stop['directions'] = Cache::get($key);
+					$stop->directions = Cache::get($key);
 				}else{
-					$stop['directions'] = $google->findDirections((array) $stop, $destinationLocationGeo);
-					Cache::add($key, $stop['directions'], Carbon::now(env('APP_TIMEZONE'))->addWeeks(1));
+					$stop->directions = $google->findDirections((array) $stop, $destinationLocationGeo);
+					Cache::add($key, $stop->directions, Carbon::now(env('APP_TIMEZONE'))->addWeeks(1));
 				}
 			}
 		}
