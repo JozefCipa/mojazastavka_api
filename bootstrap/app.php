@@ -25,6 +25,8 @@ $app = new Laravel\Lumen\Application(
 
 $app->withFacades();
 $app->configure('mail');
+$app->configure('cache');
+$app->configure('database');
 // $app->withEloquent();
 
 /*
@@ -80,6 +82,7 @@ $app->routeMiddleware([
 
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(Illuminate\Mail\MailServiceProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 

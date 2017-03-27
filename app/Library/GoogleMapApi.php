@@ -23,7 +23,7 @@ class GoogleMapApi{
 
 		//Explanation of query: https://developers.google.com/maps/articles/phpsqlsearch_v3
 		$results = app('db')->select('
-			SELECT s.name, s.lat as latitude, s.lng as longitude, s.link_numbers, v.name as type,
+			SELECT s.id, s.name, s.lat as latitude, s.lng as longitude, s.link_numbers, v.name as type,
 			( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(?) ) + sin( radians(?) ) * sin( radians( lat ) ) ) ) 
 			AS distance,
 			REPLACE(FORMAT((SELECT distance) * 1000, 0), ",", "") as distance_in_meters

@@ -81,7 +81,7 @@ class CpSK{
 			$this->timeDate = $time;
 		}
 		else{
-			throw new CpException('Wrong date format. Time should be in "HH:MM d.m.Y" format.', CpException::TIME_FORMAT);
+			throw new CpException('Zlý časový formát, očákavaný formát je "HH:MM d.m.Y".', CpException::TIME_FORMAT);
 		}
 
 		return $this;
@@ -126,7 +126,7 @@ class CpSK{
     	$tables = $xpath->query('//div[@id="main-res-inner"]/table/tbody');
 
     	if($tables->length == 0){
-    		throw new CpException('Stops not found', CpException::STOPS_NOT_FOUND);
+    		throw new CpException('Žiadne odchody v najbližšej dobe.', CpException::STOPS_NOT_FOUND);
     	}
 
     	foreach ($tables as $table){
@@ -208,18 +208,18 @@ class CpSK{
 
 	private function validate(){
 		if (! trim($this->start)) {
-			throw new CpException('You have to choose start stop.', CpException::START_STOP_EMPTY);
+			throw new CpException('Musíte zvoliť začiatočnú zastávku.', CpException::START_STOP_EMPTY);
 		}
 
 		if (! trim($this->destination)) {
-			throw new CpException('You have to choose destination stop.', CpException::DESTINATION_STOP_EMPTY);
+			throw new CpException('Musíte zvoliť cieľovú zastávku.', CpException::DESTINATION_STOP_EMPTY);
 		}
 
 		if (! trim($this->vehicle)) {
-			throw new CpException('You have to choose type of vehicle.', CpException::VEHICLE_EMPTY);
+			throw new CpException('Musíte zvoliť typ vozidla.', CpException::VEHICLE_EMPTY);
 		}
 		else if(trim($this->vehicle) === 'mhd') {
-			throw new CpException('You have to choose city.', CpException::CITY_EMPTY);
+			throw new CpException('Musíte zvoliť mesto.', CpException::CITY_EMPTY);
 		}
 	}
 }
