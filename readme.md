@@ -10,6 +10,7 @@ The answer is **Moja Zastávka**.
  - *iOS app:* React Native, Redux, Google maps API
  - *API:* Lumen, Google maps API, MariaDB
  - *3rd party resources:* stops list parsed from [OMA Slovakia](http://www.oma.sk)
+ - https://github.com/JozefCipa/php-cpsk-api
 
 ## Example of stops resource URL
 - KE: http://www.oma.sk/api?region=-1690324&tabulka=poi&typ=zastavka,zastavka-elektricky,stanica&limit=1000
