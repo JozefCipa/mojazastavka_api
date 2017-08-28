@@ -31,7 +31,7 @@ class Line{
             $result = [
                 "from" 		   => trim($this->from),
                 "to" 		   => trim($this->to),
-                "walkDuration" => trim($this->walk_duration)
+                "walkDuration" => trim($this->walkDuration)
             ];
         }
         else{
