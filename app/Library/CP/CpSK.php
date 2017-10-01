@@ -17,7 +17,7 @@ class CpSK{
 	const MHD  = 'mhd';
 
 	private $httpClient;
-	const URL = 'http://cp.atlas.sk/%s/spojenie/';
+	const URL = 'http://cp.hnonline.sk/%s/spojenie/';
 
 	private $start;
 	private $destination;
