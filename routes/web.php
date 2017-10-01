@@ -360,10 +360,10 @@ function err(Exception $e){
 	if($e->getCode() == env('ERR_CODE') || $e instanceof CpException)
 		$message = $e->getMessage();
 	else{
-		$message = 'Nastala chyba.\nNa jej odstránení sa pracuje.';
+		$message = 'Nastala chyba, prosím skúste neskôr';
 
 		// Notify me about every system exception
-		Mail::raw($e->getMessage(), function ($m) {
+		Mail::raw((string) $e, function ($m) {
 	        $m->to(env('ADMIN_EMAIL'), 'Moja Zastávka - Administrator')
 	       	  ->subject('Moja Zastávka - Exception occurred');
 	    });	
